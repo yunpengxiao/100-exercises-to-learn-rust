@@ -1,8 +1,59 @@
 // TODO: Implement `TryFrom<String>` and `TryFrom<&str>` for the `TicketTitle` type,
 //   enforcing that the title is not empty and is not longer than 50 bytes.
 //   Implement the traits required to make the tests pass too.
-
+use std::fmt::Display;
+#[derive(Debug, PartialEq, Clone)]
 pub struct TicketTitle(String);
+
+#[derive(Debug)]
+pub enum TicketTitleError {
+    Empty,
+    TooShort,
+}
+
+impl Display for TicketTitleError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Empty => write!(f, "The title cannot be empty"),
+            Self::TooShort => write!(f, "The title cannot be longer than 50 bytes"),
+        }
+    }
+}
+
+impl TryFrom<&str> for TicketTitle {
+    type Error = TicketTitleError;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let v = String::try_from(value).unwrap();
+        if v.is_empty() {
+            return Err(TicketTitleError::Empty);
+            //return Err("The title cannot be empty".to_string());
+        }
+
+        if v.len() > 50 {
+            return Err(TicketTitleError::TooShort);
+            //return Err("The title cannot be longer than 50 bytes".to_string());
+        }
+
+        Ok(Self(v))
+    }
+}
+
+impl TryFrom<String> for TicketTitle {
+    type Error = TicketTitleError;
+    fn try_from(v: String) -> Result<Self, Self::Error> {
+        if v.is_empty() {
+            return Err(TicketTitleError::Empty);
+            //return Err("The title cannot be empty".to_string());
+        }
+
+        if v.len() > 50 {
+            return Err(TicketTitleError::TooShort);
+            //return Err("The title cannot be longer than 50 bytes".to_string());
+        }
+
+        Ok(Self(v))
+    }
+}
 
 #[cfg(test)]
 mod tests {
